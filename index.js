@@ -5,7 +5,6 @@ dotenv.config()
 const app = express();
 const bodyParser = require('body-parser');
 app.use(express.json());
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 const AddUser = require("./model/UserReqs/AddUser")
@@ -16,6 +15,7 @@ const GetUserCart = require("./model/UserReqs/GetUserCart")
 const GetUserFavorites = require("./model/UserReqs/GetUserFavorites")
 const DeleteFovorites = require("./model/FavoritesReqs/DeleteFovorites")
 const deleteproductfromcart = require("./model/CartReqs/deleteProductFromCart")
+const GetMostliked = require("./model/Home/GetMostLiked")
 const UserAuthorization = require("./Middleware/UserAuthorization")
 const Authentication = require("./Middleware/Authentication")
 
@@ -27,6 +27,8 @@ app.use("/getusercart"          , UserAuthorization , GetUserCart)
 app.use("/deleteproductfromcart", UserAuthorization , deleteproductfromcart)
 app.use("/getuserfavorites"     , UserAuthorization , GetUserFavorites)
 app.use("/deletefavorites"      , UserAuthorization , DeleteFovorites)
+app.use("/getmostliked"         , GetMostliked)
+
 
 app.listen(5002, '0.0.0.0', (err) => {
     !err ? (client.connect(), console.log('Server has started on port 5002')) : console.log(err);
