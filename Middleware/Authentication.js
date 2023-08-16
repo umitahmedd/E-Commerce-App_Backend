@@ -7,19 +7,20 @@ const Authentication = async (req, res, next) => {
     try {
         const tokenHeader = req.headers.authorization;
         const token = tokenHeader ? tokenHeader.replace('Bearer ', '') : null; 
-        const tokenpayload = jwt.decode(token, JWT_KEY)
-        const Token_user_id = tokenpayload.user_id
+        const tokenpayload = jwt.decode(token, JWT_KEY);
         const expirationTime = tokenpayload.exp * 1000;
         const Datenow = Date.now()
         const kalansure = expirationTime - Datenow 
 
         if (!token) return res.sendStatus(401)
         jwt.verify(token, JWT_KEY, async (err, payload) => {   
+            let userId = payload.user_id
+            console.log(userId);
             if ((err && err.name === "TokenExpiredError") || kalansure < 900000) {
-                const userOldToken = await client.query("SELECT user_token FROM users WHERE user_id = $1", [Token_user_id])
+                const userOldToken = await client.query("SELECT user_token FROM users WHERE user_id = $1", [payload.user_id])
                 const oldToken = userOldToken.rows[0].user_token;
                 if(oldToken == token){
-                    const userRefToken = await client.query("SELECT user_refresh_token FROM users WHERE user_id = $1", [Token_user_id])
+                    const userRefToken = await client.query("SELECT user_refresh_token FROM users WHERE user_id = $1", [payload.user_id])
                     const refreshToken = userRefToken.rows[0].user_refresh_token;
                     
                     jwt.verify(refreshToken, JWT_REFRESH_KEY, async (refreshErr, refreshPayload) => {
@@ -38,7 +39,7 @@ const Authentication = async (req, res, next) => {
                                 JWT_KEY,
                                 { expiresIn: '35m' } // 45m yap
                             )
-                            await client.query("UPDATE users SET user_token = $1 WHERE user_id = $2 ", [newToken, Token_user_id])
+                            await client.query("UPDATE users SET user_token = $1 WHERE user_id = $2 ", [newToken, payload.user_id])
                             console.log('yeni token verildi');
                             next();
 
