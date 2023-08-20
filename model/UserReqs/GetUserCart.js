@@ -29,16 +29,10 @@ router.get("/", (req, res) => {
                         res.status(500).json({ error: "An error occurred while fetching product data." });
                         return;
                     }
-                    else{
-                        
-                    }
-
-                    console.log(err2)
-                    const products = result2.rows
-                    res.status(200).json({products})
-
-
-                    
+                    if (result2.rows.length > 0){
+                        const products = result2.rows
+                        res.status(200).json({products: products})
+                    }    
                 })
             }
             else{

@@ -19,17 +19,19 @@ const GetMostliked = require("./model/Home/GetMostLiked")
 const AddToCart = require("./model/CartReqs/AddToCart")
 const UserAuthorization = require("./Middleware/UserAuthorization")
 const Authentication = require("./Middleware/Authentication")
+const ReducingProductFromCart = require("./model/CartReqs/ReducingProductFromCart") 
 
-app.use("/register"             , AddUser)
-app.use("/login"                , Login)
+app.use("/register"             ,                     AddUser)
+app.use("/login"                ,                     Login)
 app.use("/check-token"          , Authentication    , Islogedin)
 app.use("/getuserdata"          , UserAuthorization , GetUserData)
 app.use("/getusercart"          , UserAuthorization , GetUserCart)
 app.use("/getuserfavorites"     , UserAuthorization , GetUserFavorites)
 app.use("/deletefavorites"      , UserAuthorization , DeleteFovorites)
-app.use("/getmostliked"         , GetMostliked)
+app.use("/getmostliked"         ,                     GetMostliked)
 app.use("/addtocart"            , UserAuthorization , AddToCart)
 app.use("/deleteproductfromcart", UserAuthorization , deleteproductfromcart)
+app.use("/reduceproductfromcart", UserAuthorization , ReducingProductFromCart)
 
 
 app.listen(5002, '0.0.0.0', (err) => {
