@@ -16,6 +16,7 @@ const GetUserFavorites = require("./model/UserReqs/GetUserFavorites")
 const DeleteFovorites = require("./model/FavoritesReqs/DeleteFovorites")
 const deleteproductfromcart = require("./model/CartReqs/deleteProductFromCart")
 const GetMostliked = require("./model/Home/GetMostLiked")
+const AddToCart = require("./model/CartReqs/AddToCart")
 const UserAuthorization = require("./Middleware/UserAuthorization")
 const Authentication = require("./Middleware/Authentication")
 
@@ -24,10 +25,11 @@ app.use("/login"                , Login)
 app.use("/check-token"          , Authentication    , Islogedin)
 app.use("/getuserdata"          , UserAuthorization , GetUserData)
 app.use("/getusercart"          , UserAuthorization , GetUserCart)
-app.use("/deleteproductfromcart", UserAuthorization , deleteproductfromcart)
 app.use("/getuserfavorites"     , UserAuthorization , GetUserFavorites)
 app.use("/deletefavorites"      , UserAuthorization , DeleteFovorites)
 app.use("/getmostliked"         , GetMostliked)
+app.use("/addtocart"            , UserAuthorization , AddToCart)
+app.use("/deleteproductfromcart", UserAuthorization , deleteproductfromcart)
 
 
 app.listen(5002, '0.0.0.0', (err) => {
