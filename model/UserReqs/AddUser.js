@@ -27,6 +27,10 @@ router.post("/", async (req, res) => {
                 const newCart = await client.query("WITH newCart AS (INSERT INTO carts(cart_quantity, cart_created_date, cart_total_price) VALUES ($1, $2, $3) RETURNING cart_id) SELECT cart_id FROM newCart;", [0, dateString, 0.00]);
                 const cart_id = newCart.rows[0].cart_id;
                 const cart_user = await client.query("INSERT INTO cart_user(user_id, cart_id) VALUES ($1, $2);", [user_id, cart_id]);
+                const newHistory = await client.query("WITH newHistory AS (INSERT INTO histories(history_quantity) VALUES ($1) RETURNING history_id) SELECT history_id FROM newHistory;", [0]);
+                const history_id = newHistory.rows[0].history_id;
+                const history_user = await client.query("INSERT INTO history_user(user_id, history_id) VALUES ($1, $2);", [user_id, history_id]);
+
                 const token = jwt.sign(
                     { user_id: user_id,authorization: "basic"},
                     JWT_KEY,

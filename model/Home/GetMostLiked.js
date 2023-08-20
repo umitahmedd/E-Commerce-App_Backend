@@ -3,45 +3,29 @@ const router = require('express').Router();
 
 router.get("/", async (req, res) => {
     try {
-        client.query("SELECT product_id, COUNT(user_id) AS user_count FROM favorites GROUP BY product_id ORDER BY user_count DESC LIMIT 20", (err, result) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({message: err.message});
-            }
-            if (result.rows.length > 0) {
-                const products1 = result.rows;
-                let productsId = []
-                products1.forEach(product=>{
-                    console.log(product.product_id);
-                    productsId.push(product.product_id)
-                    console.log(productsId);
-                })
+        const result = await client.query("SELECT product_id, COUNT(user_id) AS user_count FROM favorites GROUP BY product_id ORDER BY user_count DESC LIMIT 40");
 
-                const placeholders = productsId.map((_, i) => `$${i + 1}`).join(',');
+        if (result.rows.length > 0) {
+            const products1 = result.rows;
+            let productsId = products1.map(product => product.product_id);
 
-                client.query(`select * from products where product_id IN ($1)`, productsId, (err2, result2) => {
-                    if (err2) {
-                        console.error(err2);
-                        return res.status(500).json({message: "error"});
-                    }
-                    if (result2.rows.length > 0) {
-                        const products = result2.rows;
-                        res.status(200).json({products});
-                    } else {
-                        console.log("products list is empty");
-                        res.status(204).json({message: "products list is empty"});
-                    }
-                })
+            // Prepare the placeholders and query string for IN clause
+            const placeholders = productsId.map((_, idx) => `$${idx + 1}`).join(',');
+            const queryStr = `SELECT * FROM products WHERE product_id IN (${placeholders})`;
 
+            const productsResult = await client.query(queryStr, productsId);
 
+            if (productsResult.rows.length > 0) {
+                res.status(200).json({ products: productsResult.rows });
             } else {
-                console.log("products list is empty");
-                res.status(204).json({message: "products list is empty"});
+                res.status(204).json({ message: "products list is empty" });
             }
-        });
+        } else {
+            res.status(204).json({ message: "products list is empty" });
+        }
     } catch (err) {
         console.error(err);
-        res.status(500).json({message: err.message});
+        res.status(500).json({ message: err.message });
     }
 });
 
