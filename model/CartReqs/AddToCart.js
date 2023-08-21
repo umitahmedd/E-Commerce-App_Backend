@@ -2,7 +2,6 @@ const client = require("../../config/database");
 const router = require('express').Router();
 const dotenv = require('dotenv')
 dotenv.config()
-const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken")
 const { JWT_KEY } = process.env
 
@@ -32,7 +31,7 @@ router.post("/", (req, res) => {
                         }
                         if (result2.rows.length > 0) {
                             const product_price = result2.rows[0].product_price
-                            client.query("SELECT * FROM cart_product WHERE cart_id = $1", [cart_id], (err3, result3) => {
+                            client.query("SELECT * FROM cart_product WHERE product_id = $1 AND cart_id = $2", [ product_id, cart_id], (err3, result3) => {
                                 if (err3) {
                                     console.log(err3);
                                     res.status(500).json({ message: err3 })
@@ -63,12 +62,13 @@ router.post("/", (req, res) => {
                     })
                 }
                 else {
-                    res.status(404).json({ message: "non" })
+                    res.status(404).json({ message: "card not found" })
                 }
             })
         }
     } catch (error) {
         console.log(error);
+        res.status(500).json({message: "something went wrond", error})
     }
 })
 
