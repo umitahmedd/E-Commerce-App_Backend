@@ -4,6 +4,8 @@ const {JWT_KEY} = process.env
 const dotenv = require('dotenv');
 dotenv.config();
 const jwt = require("jsonwebtoken");
+const { types } = require('pg');
+types.setTypeParser(1700, x => parseFloat(x));
 
 router.get("/", (req, res) => {
     const tokenHeader = req.headers.authorization;
@@ -32,7 +34,10 @@ router.get("/", (req, res) => {
                     if (result2.rows.length > 0){
                         const products = result2.rows
                         res.status(200).json({products: products})
-                    }    
+                    } 
+                    else if (result2.rows.length == 0){
+                        res.status(204).json({products: []})
+                    }   
                 })
             }
             else{

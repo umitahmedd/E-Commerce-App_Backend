@@ -32,7 +32,13 @@ router.post("/", (req, res) => {
                     })
                 }
                 else if (result.rows.length > 0){
-                    res.status(422).json({message : `product with product_id ${product_id} is already in favorites`})
+                    client.query("DELETE FROM favorites WHERE product_id = $1 AND user_id = $2", [product_id, user_id], (err3,result3)=>{
+                        if (err3){
+                            console.log(err3);
+                            res.status(500).json({message: err3})
+                        } 
+                        res.status(200).json({message: ` ${product_id} product was succesfully deleted of favorites list`})
+                    })
                 }
             })
         }
