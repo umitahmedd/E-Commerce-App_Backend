@@ -16,23 +16,22 @@ router.get("/", (req, res) => {
 
   try {
     client.query(
-      "SELECT * FROM carts INNER JOIN cart_user ON cart_user.cart_id = carts.cart_id WHERE cart_user.user_id = $1",
+      "SELECT * FROM histories INNER JOIN history_user ON history_user.history_id = histories.history_id WHERE history_user.user_id = $1",
       [user_id],
       (err, result) => {
         if (err) {
           console.log(err);
           res
             .status(500)
-            .json({ error: "An error occurred while fetching cart data." });
+            .json({ error: "An error occurred while fetching history data." });
           return;
         }
-
         if (result.rows.length > 0) {
-          const cart_id = result.rows[0].cart_id;
-          console.log(cart_id);
+          const history_id = result.rows[0].history_id;
+          console.log(history_id);
           client.query(
-            "SELECT products.*, cart_product.product_total_price, cart_product.product_count, sellers.seller_name FROM products INNER JOIN cart_product ON cart_product.product_id = products.product_id INNER JOIN product_seller ON products.product_id = product_seller.product_id INNER JOIN sellers ON product_seller.seller_id = sellers.seller_id WHERE cart_product.cart_id = $1",
-            [cart_id],
+            "SELECT products.*, history_product.lookup_date FROM products INNER JOIN history_product ON history_product.product_id = products.product_id WHERE history_product.history_id = $1 ORDER BY lookup_date DESC ",
+            [history_id],
             (err2, result2) => {
               if (err2) {
                 console.log(err2);
@@ -45,15 +44,31 @@ router.get("/", (req, res) => {
               }
               if (result2.rows.length > 0) {
                 const products = result2.rows;
-                res.status(200).json({ products: products });
+                res
+                  .status(200)
+                  .json({
+                    products: products,
+                    message: "pulling product history was successful",
+                  });
               } else if (result2.rows.length == 0) {
-                res.status(204).json({ products: [] });
+                res
+                  .status(204)
+                  .json({
+                    products: [],
+                    message:
+                      "pulling product history was successful history is empty",
+                  });
               }
             }
           );
         } else {
           console.log("Cart not found.");
-          res.status(404).json({ products: [] });
+          res
+            .status(404)
+            .json({
+              products: [],
+              message: "pulling product history was unsuccessful",
+            });
         }
       }
     );
