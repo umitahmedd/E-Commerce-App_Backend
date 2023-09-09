@@ -46,11 +46,9 @@ const Authentication = async (req, res, next) => {
                         .json({ message: "Refresh token expired" });
                     } else {
                       console.log(refreshErr);
-                      return res
-                        .status(400)
-                        .json({
-                          message: "Error while verifying refresh token",
-                        });
+                      return res.status(400).json({
+                        message: "Error while verifying refresh token",
+                      });
                     }
                   } else {
                     const newToken = jwt.sign(
@@ -71,11 +69,9 @@ const Authentication = async (req, res, next) => {
                 }
               );
             } else {
-              res
-                .status(404)
-                .json({
-                  message: "Kullanim disi birakilmis bir token girdiniz",
-                });
+              res.status(404).json({
+                message: "Kullanim disi birakilmis bir token girdiniz",
+              });
             }
           }
         } else if (err && err.name != "TokenExpiredError") {
