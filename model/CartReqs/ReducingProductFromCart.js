@@ -57,20 +57,16 @@ router.patch("/", (req, res) => {
                                 console.log(err4);
                                 res.status(500).json({ message: err4 });
                               }
-                              res
-                                .status(200)
-                                .json({
-                                  message: `product with product_id: ${product_id} was added to cart with cart_id: ${cart_id}`,
-                                });
+                              res.status(200).json({
+                                message: `product with product_id: ${product_id} was added to cart with cart_id: ${cart_id}`,
+                              });
                             }
                           );
                         } else {
-                          res
-                            .status(422)
-                            .json({
-                              message:
-                                "left one product, you can't reduce product anymore",
-                            });
+                          res.status(422).json({
+                            message:
+                              "left one product, you can't reduce product anymore",
+                          });
                         }
                       }
                     }
